@@ -1,6 +1,5 @@
 package xyz.baktha.oaas.data.model;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,7 +26,7 @@ public class ClientDetail {
     private Set<String> scope;
     private Set<String> authorizedGrantTypes;
     private Set<String> registeredRedirectUri;
-    private Collection<String> authorities;
+    private Set<String> authorities;
     private Integer accessTokenValiditySeconds;
     private Integer refreshTokenValiditySeconds;
     private boolean autoApprove;

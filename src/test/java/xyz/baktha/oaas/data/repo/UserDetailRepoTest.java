@@ -1,11 +1,9 @@
 package xyz.baktha.oaas.data.repo;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.function.Consumer;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
