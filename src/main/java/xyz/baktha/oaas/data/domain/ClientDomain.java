@@ -1,4 +1,4 @@
-package xyz.baktha.oaas.data.model;
+package xyz.baktha.oaas.data.domain;
 
 import java.util.Map;
 import java.util.Set;
@@ -8,19 +8,22 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 @Document(collection = "oaas_client")
 @Data
-public class ClientDetail {
+@EqualsAndHashCode(callSuper = true)
+public class ClientDomain extends Auditable<String> {
 
     @Id
     private String id;
-    @Indexed
+    @Indexed(unique=true)
     private String clientId;
     private Set<String> resourceIds;
     private boolean secretRequired;
-    @Indexed
+    @ToString.Exclude
     private String clientSecret;
     private boolean scoped;
     private Set<String> scope;
@@ -31,8 +34,4 @@ public class ClientDetail {
     private Integer refreshTokenValiditySeconds;
     private boolean autoApprove;
     private Map<String, Object> additionalInformation;
-
-    public ClientDetail() {
-    }
-
 }

@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import xyz.baktha.oaas.data.model.ClientDetail;
+import xyz.baktha.oaas.data.domain.ClientDomain;
 
 
-public interface ClientDetailRepo extends MongoRepository<ClientDetail, Serializable> {
+public interface ClientDetailRepo extends MongoRepository<ClientDomain, Serializable> {
 
-    public ClientDetail findByClientId(String clientId);
+    public ClientDomain findByClientId(String clientId);
 
 }

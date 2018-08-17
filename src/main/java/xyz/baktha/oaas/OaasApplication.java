@@ -1,4 +1,4 @@
-package xyz.baktha.oaas.web.app;
+package xyz.baktha.oaas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,13 +22,13 @@ public class OaasApplication {
 	
 }
 
-@RestController
-class TestController {
-	
-	@GetMapping(value = "/first")
-	public String first() {
-		
-		return "Hello World";
-	}
-	
-}
+//@RestController
+//class TestController {
+//	
+//	@GetMapping(value = "/first")
+//	public String first() {
+//		
+//		return "Hello World";
+//	}
+//	
+//}

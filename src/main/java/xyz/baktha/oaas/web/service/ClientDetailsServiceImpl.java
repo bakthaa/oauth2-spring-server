@@ -1,13 +1,11 @@
 package xyz.baktha.oaas.web.service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientAlreadyExistsException;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -15,143 +13,88 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.security.oauth2.provider.ClientRegistrationService;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
-import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.stereotype.Service;
 
-import xyz.baktha.oaas.data.model.ClientDetail;
+import xyz.baktha.oaas.data.domain.ClientDomain;
+import xyz.baktha.oaas.data.exception.InvalidClientException;
 import xyz.baktha.oaas.data.repo.ClientDetailRepo;
+import xyz.baktha.oaas.web.builder.DomainBuilder;
 
 @Service
 public class ClientDetailsServiceImpl implements ClientDetailsService, ClientRegistrationService {
 
-    private static BaseClientDetails getClientFromMongoDBClientDetails(ClientDetail clientDetails) {
-        BaseClientDetails bc = new BaseClientDetails();
-        bc.setAccessTokenValiditySeconds(clientDetails.getAccessTokenValiditySeconds());
-        bc.setAuthorizedGrantTypes(clientDetails.getAuthorizedGrantTypes());
-        bc.setClientId(clientDetails.getClientId());
-        bc.setClientSecret(clientDetails.getClientSecret());
-        bc.setRefreshTokenValiditySeconds(clientDetails.getRefreshTokenValiditySeconds());
-        bc.setRegisteredRedirectUri(clientDetails.getRegisteredRedirectUri());
-        bc.setResourceIds(clientDetails.getResourceIds());
-        bc.setScope(clientDetails.getScope());
-        bc.setAutoApproveScopes(clientDetails.getScope());
-        if(null != clientDetails.getAuthorities()){
-        	
-        	Collection<GrantedAuthority> authorities = new HashSet<>();
-        	for (String client : clientDetails.getAuthorities()) {
-        		authorities.add(new SimpleGrantedAuthority(client));
-			}
-        	bc.setAuthorities(authorities);
-        }
-        return bc;
-    }
-    
-    private static List<ClientDetails> getClientsFromMongoDBClientDetails(List<ClientDetail> clientDetails) {
-        List<ClientDetails> bcds = new LinkedList<>();
-        if (clientDetails != null && !clientDetails.isEmpty()) {
-        	
-        	for (ClientDetail clientDetail : clientDetails) {
-				
-        		bcds.add(getClientFromMongoDBClientDetails(clientDetail));
-			}
-        }
-        return bcds;
-    }
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    private ClientDetail getMongoDBClientDetailsFromClient(ClientDetails cd) {
-    	ClientDetail clientDetailModel = new ClientDetail();
-        clientDetailModel.setAccessTokenValiditySeconds(cd.getAccessTokenValiditySeconds());
-        clientDetailModel.setAdditionalInformation(cd.getAdditionalInformation());
-        clientDetailModel.setAuthorizedGrantTypes(cd.getAuthorizedGrantTypes());
-        clientDetailModel.setClientId(cd.getClientId());
-        clientDetailModel.setClientSecret(passwordEncoder.encode(cd.getClientSecret()));
-        clientDetailModel.setRefreshTokenValiditySeconds(cd.getRefreshTokenValiditySeconds());
-        clientDetailModel.setRegisteredRedirectUri(cd.getRegisteredRedirectUri());
-        clientDetailModel.setResourceIds(cd.getResourceIds());
-        clientDetailModel.setScope(cd.getScope());
-        clientDetailModel.setScoped(cd.isScoped());
-        clientDetailModel.setSecretRequired(cd.isSecretRequired());
-        clientDetailModel.setId(cd.getClientId());
-        clientDetailModel.setAutoApprove(true);
-        
-        if(null != cd.getAuthorities()){
-        	
-        	Collection<String> autho = new HashSet<>();       	
-        	for (GrantedAuthority a : cd.getAuthorities()) {
-        		
-        		autho.add(a.getAuthority());    	
-        	}
-        	clientDetailModel.setAuthorities(autho);
-        }
-        return clientDetailModel;
-    }
+	@Autowired
+	private ClientDetailRepo clientDetailsRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	// @Secured("ROLE_ADMIN")
+	@Override
+	public void addClientDetails(ClientDetails cd) throws ClientAlreadyExistsException {
 
-    @Autowired
-    private ClientDetailRepo clientDetailsRepo;
+		final ClientDomain clientDomain = Optional.ofNullable(cd)
+				.map(val -> DomainBuilder.toClientDomain(val, passwordEncoder))
+				.orElseThrow(() -> new InvalidClientException(""));
 
-    //@Secured("ROLE_ADMIN")
-    @Override
-    public void addClientDetails(ClientDetails cd) throws ClientAlreadyExistsException {
-    	ClientDetail clientDetails = getMongoDBClientDetailsFromClient(cd);
-        clientDetailsRepo.save(clientDetails);
-    }
+		clientDetailsRepo.save(clientDomain);
+	}
 
-    public void deleteAll() {
-        //clientDetailsRepo.deleteAll();
-    }
+	// not used
+	public void deleteAll() {
+		// clientDetailsRepo.deleteAll();
+	}
 
-    @Override
-    public List<ClientDetails> listClientDetails() {
-        List<ClientDetail> mdbcds = clientDetailsRepo.findAll();
-        return getClientsFromMongoDBClientDetails(mdbcds);
-    }
+	@Override
+	public List<ClientDetails> listClientDetails() {
 
-    @Override
-    public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
-        ClientDetail clientDetails = clientDetailsRepo.findByClientId(clientId);
-        if (null == clientDetails) {
-            throw new ClientRegistrationException("Client not found with id '" + clientId + "'");
-        }
-        return getClientFromMongoDBClientDetails(clientDetails);
-    }
+		final List<ClientDomain> mdbcds = clientDetailsRepo.findAll();
+		return Optional.ofNullable(mdbcds).map(clientDomains -> clientDomains.stream().filter(Objects::nonNull)
+				.map(DomainBuilder::toClientDetails).collect(Collectors.toList())).orElse(null);
+	}
 
-    @Override
-    //@Secured("ROLE_ADMIN")
-    public void removeClientDetails(String clientId) throws NoSuchClientException {
-    	ClientDetail clientDetails = clientDetailsRepo.findByClientId(clientId);
-        if (null == clientDetails) {
-            throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
-        }
-        //clientDetailsRepo.delete(clientDetails);
-    }
+	@Override
+	public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
 
-    /*public ClientDetail save(ClientDetail authClient) {
-        return clientDetailsRepo.save(authClient);
-    }*/
+		final ClientDomain clientDomain = clientDetailsRepo.findByClientId(clientId);
+		return Optional.ofNullable(clientDomain).map(DomainBuilder::toClientDetails)
+				.orElseThrow(() -> new ClientRegistrationException("Client not found with id '" + clientId + "'"));
+	}
 
-    @Override
-    //@Secured("ROLE_ADMIN")
-    public void updateClientDetails(ClientDetails cd) throws NoSuchClientException {
-    	ClientDetail clientDetails = clientDetailsRepo.findByClientId(cd.getClientId());
-        if (null == clientDetails) {
-            throw new NoSuchClientException("Client not found with ID '" + cd.getClientId() + "'");
-        }
-        clientDetails = getMongoDBClientDetailsFromClient(cd);
-        clientDetailsRepo.save(clientDetails);
-    }
+	@Override
+	// @Secured("ROLE_ADMIN")
+	// Not used
+	public void removeClientDetails(String clientId) throws NoSuchClientException {
+		ClientDomain clientDetails = clientDetailsRepo.findByClientId(clientId);
+		if (null == clientDetails) {
+			throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
+		}
+		// clientDetailsRepo.delete(clientDetails);
+	}
 
-    @Override
-    //@Secured("ROLE_ADMIN")
-    public void updateClientSecret(String clientId, String secret) throws NoSuchClientException {
-    	ClientDetail clientDetailModels = clientDetailsRepo.findByClientId(clientId);
-        if (null == clientDetailModels) {
-            throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
-        }
-        clientDetailModels.setClientSecret(passwordEncoder.encode(secret));
-        clientDetailsRepo.save(clientDetailModels);
-    }
+	@Override
+	// @Secured("ROLE_ADMIN")
+	public void updateClientDetails(ClientDetails cd) throws NoSuchClientException {
+
+		final ClientDomain clientDomain = clientDetailsRepo.findByClientId(cd.getClientId());
+
+		if (null == clientDomain) {
+			throw new NoSuchClientException("Client not found with ID '" + cd.getClientId() + "'");
+		}
+		DomainBuilder.toClientDomain(cd, passwordEncoder, clientDomain);
+		clientDetailsRepo.save(clientDomain);
+	}
+
+	@Override
+	// @Secured("ROLE_ADMIN")
+	public void updateClientSecret(String clientId, String secret) throws NoSuchClientException {
+
+		final ClientDomain clientDetailModels = clientDetailsRepo.findByClientId(clientId);
+		if (null == clientDetailModels) {
+			throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
+		}
+		clientDetailModels.setClientSecret(passwordEncoder.encode(secret));
+		clientDetailsRepo.save(clientDetailModels);
+	}
 
 }

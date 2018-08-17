@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import xyz.baktha.oaas.data.config.MongoConfig;
-import xyz.baktha.oaas.data.model.UserDetail;
+import xyz.baktha.oaas.data.domain.UserDomain;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest (classes = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
@@ -34,7 +34,7 @@ public class UserDetailRepoTest {
 	public void atestInsertS() {
 		
 		System.out.println(userRepo);
-		UserDetail user = new UserDetail();
+		UserDomain user = new UserDomain();
 		user.setPassword("Sdfsdfsjdhfsjdhgf");
 		user.setPhoneNo(USER_PHONE);
 		user.setRights(new HashSet<String>(Arrays.asList("fgdfG")));

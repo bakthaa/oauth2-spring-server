@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import xyz.baktha.oaas.data.config.MongoConfig;
-import xyz.baktha.oaas.data.model.ClientDetail;
+import xyz.baktha.oaas.data.domain.ClientDomain;
 
 
 @RunWith(SpringRunner.class)
@@ -36,13 +36,13 @@ public class ClientDetailRepoTest {
 	@Autowired
 	ClientDetailRepo clientDetailRepo;	
 	
-	ClientDetail cd;
+	ClientDomain cd;
 	
 	
 	@Before
 	public void setup() {
 		
-		cd = new ClientDetail();
+		cd = new ClientDomain();
 		cd.setClientId("Simple_ID_2");
 		cd.setClientSecret("JunitSec");
 		cd.setAccessTokenValiditySeconds(100);
