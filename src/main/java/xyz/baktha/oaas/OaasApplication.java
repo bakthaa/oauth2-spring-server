@@ -13,11 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OaasApplication {
 
 	public static void main(String[] args) {
+		
 		SpringApplication.run(OaasApplication.class, args);
-		
-	
-		
-		
 	}
 	
 }

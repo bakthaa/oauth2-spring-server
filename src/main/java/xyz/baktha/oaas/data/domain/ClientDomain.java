@@ -19,7 +19,7 @@ public class ClientDomain extends Auditable<String> {
 
     @Id
     private String id;
-    @Indexed(unique=true)
+    @Indexed//(unique=true)
     private String clientId;
     private Set<String> resourceIds;
     private boolean secretRequired;
