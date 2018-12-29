@@ -11,12 +11,11 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.baktha.oaas.data.exception.InvalidClientException;
@@ -38,21 +37,21 @@ public class AdminController {
 	private AdminService adminService;
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	@GetMapping("/users")
 	public List<UserModel> getUsers() {
 
 		return adminService.getAllUser();
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
-	@RequestMapping(value = "/clients", method = RequestMethod.GET)
+	@GetMapping("/clients")
 	public List<ClientModel> getClients() {
 
 		return adminService.getClients();
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
-	@RequestMapping(value = "/user", method = RequestMethod.POST)
+	@PostMapping("/user")
 	public void adduser(@ModelAttribute("user") UserModel form, BindingResult result) {
 		
 		List<String> errs = isValidUser(form);
@@ -64,8 +63,8 @@ public class AdminController {
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
-	@RequestMapping(value = "/nirvagam_client", method = RequestMethod.POST)
-	public void addClient(@ModelAttribute("client") ClientModel form, BindingResult result, Model model) {
+	@PostMapping("/client")
+	public void addClient(@ModelAttribute("client") ClientModel form) {
 
 		List<String> errs = isValidClient(form);
 		if (0 < errs.size()) {
