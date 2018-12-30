@@ -1,4 +1,4 @@
-package xyz.baktha.oaas;
+package xyz.baktha.oaas.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
