@@ -48,7 +48,7 @@ public class UserDetailsServiceImplTest {
 		userDetailsService.resetPwd(PHONE_NUM, "7777AAAAAAAAAABBBBBBB");
 	}
 
-	@Test
+//	@Test
 	public void c_resetPwdLess8() {
 
 		System.out.println("user Reset");

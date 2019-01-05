@@ -66,7 +66,7 @@ public class ClientDetailsServiceImplTest {
 		clientDetailService.listClientDetails().forEach(System.out::println);
 	}
 
-	@Test
+//	@Test
 	public final void c_testLoadClientByClientId() {
 		
 		ClientDetails res = clientDetailService.loadClientByClientId("Simple_ID_2");
@@ -80,7 +80,7 @@ public class ClientDetailsServiceImplTest {
 //		fail("Not yet implemented"); // TODO
 //	}
 
-	@Test
+//	@Test
 	public final void d_testUpdateClientDetails() {
 		
 		BaseClientDetails bc = new BaseClientDetails();
@@ -101,7 +101,7 @@ public class ClientDetailsServiceImplTest {
 		clientDetailService.updateClientDetails(bc);
 	}
 
-	@Test
+//	@Test
 	public final void e_testUpdateClientSecret() {
 		
 		clientDetailService.updateClientSecret("Simple_ID_2", "JunitSec_2");

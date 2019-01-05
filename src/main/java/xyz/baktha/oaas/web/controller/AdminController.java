@@ -6,15 +6,15 @@ package xyz.baktha.oaas.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +52,9 @@ public class AdminController {
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
 	@PostMapping("/user")
-	public void adduser(@ModelAttribute("user") UserModel form, BindingResult result) {
+	public void adduser(@Valid UserModel form) {
+		
+//		TODO: test @valid behavior
 		
 		List<String> errs = isValidUser(form);
 		if (0 < errs.size()) {
@@ -64,7 +66,9 @@ public class AdminController {
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
 	@PostMapping("/client")
-	public void addClient(@ModelAttribute("client") ClientModel form) {
+	public void addClient(@Valid ClientModel form) {
+		
+//		TODO: test @valid behavior
 
 		List<String> errs = isValidClient(form);
 		if (0 < errs.size()) {
@@ -82,13 +86,7 @@ public class AdminController {
 
 			errMsg.add("Invalid Username");
 		}
-		if (validator.isValidInput("Password", form.getPwd(), "Password", 15, false)) {
-
-			if (!form.getPwd().equals(form.getRePwd())) {
-
-				errMsg.add("Password Not Match");
-			}
-		} else {
+		if (!validator.isValidInput("Password", form.getPwd(), "Password", 20, false)) {
 
 			errMsg.add("Invalid Password");
 		}

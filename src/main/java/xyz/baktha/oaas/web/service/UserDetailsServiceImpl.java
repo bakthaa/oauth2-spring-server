@@ -2,6 +2,7 @@ package xyz.baktha.oaas.web.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -12,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import xyz.baktha.oaas.data.domain.ClientDomain;
 import xyz.baktha.oaas.data.domain.UserDomain;
+import xyz.baktha.oaas.data.exception.InvalidClientException;
 import xyz.baktha.oaas.data.exception.InvalidUserException;
 import xyz.baktha.oaas.data.repo.UserDetailRepo;
 import xyz.baktha.oaas.web.builder.DomainBuilder;
@@ -29,11 +32,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	// @Secured("ROLE_ADMIN")
 	public void addUser(User user) {
 
-		if (!isValid(user))
-			throw new InvalidUserException("");
-		
-		userRepo.save(DomainBuilder.buildUserDomain(user, passwordEncoder));
-
+		final UserDomain userDomain = Optional.ofNullable(user)
+				.map(val -> DomainBuilder.buildUserDomain(val, passwordEncoder))
+				.orElseThrow(() -> new InvalidUserException(""));
+		userRepo.save(userDomain);
 	}
 
 
@@ -66,19 +68,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		return userRepo.deleteByPhone(phoneNo);
 	}
 
-	public boolean isValid(User user) {
-
-		if (null == user)
-			return false;
-
-		if (StringUtils.isEmpty(user.getUsername()) || 7 > user.getUsername().length())
-			return false;
-
-		if (StringUtils.isEmpty(user.getPassword()) || 8 > user.getPassword().length())
-			return false;
-
-		return true;
-	}
 
 	@Override
 	public UserDetails loadUserByUsername(String arg0) throws UsernameNotFoundException {

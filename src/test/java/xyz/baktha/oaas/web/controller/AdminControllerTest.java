@@ -20,13 +20,14 @@ public class AdminControllerTest {
 	@Autowired
 	AdminController controller;
 	
-	@Value("${m2.home}")
-	String abc;
+	/*
+	 * @Value("${m2.home}") String abc;
+	 */
 	
 	@Test
 	public final void testGetUsers() {
 		
-		System.out.println(abc);
+//		System.out.println(abc);
 		
 		System.out.println(controller.getUsers());
 		
@@ -38,19 +39,18 @@ public class AdminControllerTest {
 		
 		System.out.println(controller.getClients());
 	}
-
-//	@Test
+	
+	@Test
 	public final void testAdduser() {
 		
 		UserModel form = new UserModel();
 		form.setUname("ooooo1234");
-		form.setPwd("www234zzzz");
-		form.setRePwd("www234zzz");
+		form.setPwd("www234zzzz");		
 		form.setGrants(Sets.newTreeSet("1", "2"));
 		controller.adduser(form);
 	}
 
-//	@Test
+	@Test
 	public final void testAddClient() {
 		
 		ClientModel form = new ClientModel();
