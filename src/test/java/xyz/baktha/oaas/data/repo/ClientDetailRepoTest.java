@@ -43,7 +43,7 @@ public class ClientDetailRepoTest {
 	public void setup() {
 		
 		cd = new ClientDomain();
-		cd.setClientId("Simple_ID_2");
+		cd.setClient("Simple_ID_2");
 		cd.setClientSecret("JunitSec");
 		cd.setAccessTokenValiditySeconds(100);
 		
@@ -84,7 +84,7 @@ public class ClientDetailRepoTest {
 	@Test
 	public void dtestDelete() {
 		
-		clientDetailRepo.deleteById(clientDetailRepo.findByClientId(cd.getClientId()).getId());
+		clientDetailRepo.deleteById(clientDetailRepo.findByClient(cd.getClient()).getId());
 	}
 
 	@SafeVarargs

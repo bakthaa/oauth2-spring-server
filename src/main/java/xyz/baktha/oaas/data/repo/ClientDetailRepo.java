@@ -9,6 +9,6 @@ import xyz.baktha.oaas.data.domain.ClientDomain;
 
 public interface ClientDetailRepo extends MongoRepository<ClientDomain, Serializable> {
 
-    public ClientDomain findByClientId(String clientId);
+    public ClientDomain findByClient(String clientId);
 
 }

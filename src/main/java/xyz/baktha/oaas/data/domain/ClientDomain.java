@@ -19,8 +19,8 @@ public class ClientDomain extends Auditable<String> {
 
     @Id
     private String id;
-    @Indexed//(unique=true)
-    private String clientId;
+    @Indexed(unique=true)
+    private String client;
     private Set<String> resourceIds;
     private boolean secretRequired;
     @ToString.Exclude

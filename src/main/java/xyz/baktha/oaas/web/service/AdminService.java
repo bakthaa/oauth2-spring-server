@@ -49,7 +49,7 @@ public class AdminService {
 
 	public List<ClientModel> getClients() {
 
-		List<ClientDetails> clientDetails = clientDetailsService.listClientDetails();
+		final List<ClientDetails> clientDetails = clientDetailsService.listClientDetails();
 
 		return Optional.ofNullable(clientDetails).map(coll -> coll.stream().filter(Objects::nonNull)
 				.map(ModelBuilder::toClientModel).collect(Collectors.toList())).orElse(null);
@@ -57,11 +57,11 @@ public class AdminService {
 
 	public void addClient(final ClientModel clientModel) {
 
-		final ClientDetails bc = Optional.ofNullable(clientModel).map(ModelBuilder::toClientDetail)
+		final ClientDetails clientDetails = Optional.ofNullable(clientModel).map(ModelBuilder::toClientDetail)
 				.orElseThrow(() -> new InvalidClientException("clientModel val null"));
 
-		clientDetailsService.addClientDetails(bc);
-		LOG.info("New client added [" + bc.getClientId() + ", " + bc.getAuthorities() + "]");
+		clientDetailsService.addClientDetails(clientDetails);
+		LOG.info("New client added [" + clientDetails.getClientId() + ", " + clientDetails.getAuthorities() + "]");
 	}
 
 }

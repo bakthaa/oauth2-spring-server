@@ -56,7 +56,7 @@ public class ClientDetailsServiceImpl implements ClientDetailsService, ClientReg
 	@Override
 	public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
 
-		final ClientDomain clientDomain = clientDetailsRepo.findByClientId(clientId);
+		final ClientDomain clientDomain = clientDetailsRepo.findByClient(clientId);
 		return Optional.ofNullable(clientDomain).map(DomainBuilder::toClientDetails)
 				.orElseThrow(() -> new ClientRegistrationException("Client not found with id '" + clientId + "'"));
 	}
@@ -65,7 +65,7 @@ public class ClientDetailsServiceImpl implements ClientDetailsService, ClientReg
 	// @Secured("ROLE_ADMIN")
 	// Not used
 	public void removeClientDetails(String clientId) throws NoSuchClientException {
-		ClientDomain clientDetails = clientDetailsRepo.findByClientId(clientId);
+		ClientDomain clientDetails = clientDetailsRepo.findByClient(clientId);
 		if (null == clientDetails) {
 			throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
 		}
@@ -76,7 +76,7 @@ public class ClientDetailsServiceImpl implements ClientDetailsService, ClientReg
 	// @Secured("ROLE_ADMIN")
 	public void updateClientDetails(ClientDetails cd) throws NoSuchClientException {
 
-		final ClientDomain clientDomain = clientDetailsRepo.findByClientId(cd.getClientId());
+		final ClientDomain clientDomain = clientDetailsRepo.findByClient(cd.getClientId());
 
 		if (null == clientDomain) {
 			throw new NoSuchClientException("Client not found with ID '" + cd.getClientId() + "'");
@@ -89,7 +89,7 @@ public class ClientDetailsServiceImpl implements ClientDetailsService, ClientReg
 	// @Secured("ROLE_ADMIN")
 	public void updateClientSecret(String clientId, String secret) throws NoSuchClientException {
 
-		final ClientDomain clientDetailModels = clientDetailsRepo.findByClientId(clientId);
+		final ClientDomain clientDetailModels = clientDetailsRepo.findByClient(clientId);
 		if (null == clientDetailModels) {
 			throw new NoSuchClientException("Client not found with ID '" + clientId + "'");
 		}

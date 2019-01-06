@@ -12,8 +12,6 @@ public class ClientModel {
 	private String clientId;
 	@ToString.Exclude
 	private String clientSec;
-	@ToString.Exclude
-	private String reClientSec;
 	private String validity;
 	private String dirUrl;
 	private Set<String> grants;

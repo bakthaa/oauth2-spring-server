@@ -23,6 +23,7 @@ import xyz.baktha.oaas.data.exception.InvalidUserException;
 import xyz.baktha.oaas.web.model.ClientModel;
 import xyz.baktha.oaas.web.model.UserModel;
 import xyz.baktha.oaas.web.service.AdminService;
+import xyz.baktha.oaas.web.util.ValidationUtil;
 
 /**
  * @author power-team
@@ -31,7 +32,8 @@ import xyz.baktha.oaas.web.service.AdminService;
 @RestController
 public class AdminController {
 
-	Validator validator = ESAPI.validator();
+	@Autowired
+	private ValidationUtil validationUtil;
 
 	@Autowired
 	private AdminService adminService;
@@ -52,28 +54,30 @@ public class AdminController {
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
 	@PostMapping("/user")
-	public void adduser(@Valid UserModel form) {
-		
+	public void adduser(UserModel form) {
+
 //		TODO: test @valid behavior
-		
-		List<String> errs = isValidUser(form);
+
+		final List<String> errs = isValidUser(form);
 		if (0 < errs.size()) {
 
-			throw new InvalidUserException(StringUtils.collectionToDelimitedString(errs, ","));
+			throw new InvalidUserException(toStringByComma(errs));
 		}
-		adminService.addUser(form);		
+		adminService.addUser(form);
+	}
+
+	private String toStringByComma(List<String> errs) {
+		return "[ " + StringUtils.collectionToDelimitedString(errs, ",") + " ]";
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_NIRVAGI')")
 	@PostMapping("/client")
-	public void addClient(@Valid ClientModel form) {
-		
-//		TODO: test @valid behavior
+	public void addClient(ClientModel form) {
 
-		List<String> errs = isValidClient(form);
+		final List<String> errs = isValidClient(form);
 		if (0 < errs.size()) {
 
-			throw new InvalidClientException(StringUtils.collectionToDelimitedString(errs, ","));
+			throw new InvalidClientException(toStringByComma(errs));
 		}
 		adminService.addClient(form);
 	}
@@ -82,11 +86,11 @@ public class AdminController {
 
 		List<String> errMsg = new ArrayList<String>();
 
-		if (!validator.isValidInput("userName", form.getUname(), "AccountName", 20, false)) {
+		if (!validationUtil.isValidInput("userName", form.getUname(), "AccountName", 8, 20, false)) {
 
 			errMsg.add("Invalid Username");
 		}
-		if (!validator.isValidInput("Password", form.getPwd(), "Password", 20, false)) {
+		if (!validationUtil.isValidInput("Password", form.getPwd(), "Password", 8, 20, false)) {
 
 			errMsg.add("Invalid Password");
 		}
@@ -97,31 +101,25 @@ public class AdminController {
 
 		List<String> errMsg = new ArrayList<String>();
 
-		if (!validator.isValidInput("resourceId", form.getResourceId(), "AccountName", 20, false)) {
+		if (!validationUtil.isValidInput("resourceId", form.getResourceId(), "AccountName",8, 20, false)) {
 
 			errMsg.add("Invalid resourceId");
 		}
-		if (!validator.isValidInput("clientId", form.getClientId(), "AccountName", 20, false)) {
+		if (!validationUtil.isValidInput("clientId", form.getClientId(), "AccountName",8, 20, false)) {
 
 			errMsg.add("Invalid ClientId");
 		}
-		if (validator.isValidInput("clientSec", form.getClientSec(), "Password", 15, false)) {
-
-			if (!form.getClientSec().equals(form.getReClientSec())) {
-
-				errMsg.add("clientSec Not Match");
-			}
-		} else {
+		if (!validationUtil.isValidInput("clientSec", form.getClientSec(), "Password",8,15, false)) {
 
 			errMsg.add("Invalid ClientSec");
 		}
-
-		if (!validator.isValidInput("validity", form.getValidity(), "Number5", 5, false)) {
+		
+		if (!validationUtil.isValidInput("validity", form.getValidity(), "Number5",1, 5, false)) {
 
 			errMsg.add("Invalid validity");
 		}
 
-		if (!validator.isValidInput("dirUrl", form.getDirUrl(), "URL", 200, true)) {
+		if (!validationUtil.isValidInput("dirUrl", form.getDirUrl(), "URL",8, 200, true)) {
 
 			errMsg.add("Invalid dirUrl");
 		}

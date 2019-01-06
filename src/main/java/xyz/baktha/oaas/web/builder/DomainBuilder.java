@@ -39,7 +39,7 @@ public final class DomainBuilder {
 		BaseClientDetails bcd = new BaseClientDetails();
 		bcd.setAccessTokenValiditySeconds(clientDomain.getAccessTokenValiditySeconds());
 		bcd.setAuthorizedGrantTypes(clientDomain.getAuthorizedGrantTypes());
-		bcd.setClientId(clientDomain.getClientId());
+		bcd.setClientId(clientDomain.getClient());
 		bcd.setClientSecret(clientDomain.getClientSecret());
 		bcd.setRefreshTokenValiditySeconds(clientDomain.getRefreshTokenValiditySeconds());
 		bcd.setRegisteredRedirectUri(clientDomain.getRegisteredRedirectUri());
@@ -63,7 +63,8 @@ public final class DomainBuilder {
 		clientDomain.setAccessTokenValiditySeconds(cd.getAccessTokenValiditySeconds());
 		clientDomain.setAdditionalInformation(cd.getAdditionalInformation());
 		clientDomain.setAuthorizedGrantTypes(cd.getAuthorizedGrantTypes());
-		clientDomain.setClientId(cd.getClientId());
+		clientDomain.setClient(cd.getClientId());
+//		clientDomain.setId(cd.getClientId());
 		clientDomain.setClientSecret(encoder.encode(cd.getClientSecret()));
 		clientDomain.setRefreshTokenValiditySeconds(cd.getRefreshTokenValiditySeconds());
 		clientDomain.setRegisteredRedirectUri(cd.getRegisteredRedirectUri());
@@ -71,7 +72,6 @@ public final class DomainBuilder {
 		clientDomain.setScope(cd.getScope());
 		clientDomain.setScoped(cd.isScoped());
 		clientDomain.setSecretRequired(cd.isSecretRequired());
-		clientDomain.setId(cd.getClientId());
 		clientDomain.setAutoApprove(true);
 
 		Set<String> autho = Optional.ofNullable(cd.getAuthorities()).map(MAPPER_AUTHS_TO_STRINGS).orElse(null);

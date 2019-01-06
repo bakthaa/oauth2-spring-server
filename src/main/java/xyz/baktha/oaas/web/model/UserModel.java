@@ -10,11 +10,11 @@ import lombok.ToString;
 @Data
 public class UserModel {
 
-	@Size(min = 8, max = 20, message = "Invalid Username")
+//	@Size(min = 8, max = 20, message = "Invalid Username")
 	private String uname;
 
 	@ToString.Exclude
-	@Size(min = 8, max = 20, message = "Invalid Password")
+//	@Size(min = 8, max = 20, message = "Invalid Password")
 	private String pwd;
 
 	private Set<String> grants;

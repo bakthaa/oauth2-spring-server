@@ -4,10 +4,10 @@ import org.assertj.core.util.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import xyz.baktha.oaas.data.exception.InvalidClientException;
 import xyz.baktha.oaas.web.model.ClientModel;
 import xyz.baktha.oaas.web.model.UserModel;
 
@@ -40,7 +40,7 @@ public class AdminControllerTest {
 		System.out.println(controller.getClients());
 	}
 	
-	@Test
+//	@Test
 	public final void testAdduser() {
 		
 		UserModel form = new UserModel();
@@ -50,13 +50,29 @@ public class AdminControllerTest {
 		controller.adduser(form);
 	}
 
-	@Test
+//	@Test	
 	public final void testAddClient() {
+		
+		ClientModel form = new ClientModel();
+
+		form.setResourceId("abcd_123");
+		form.setClientId("abcd_123");
+		form.setClientSec("12345abc");
+		form.setValidity("3600");
+		form.setDirUrl("http://localhost:8080");
+		form.setAuthorities(Sets.newTreeSet("ROLE_USER", "ROLE_ADMIN"));
+		form.setGrants(Sets.newTreeSet("1", "2"));
+		form.setScopes(Sets.newTreeSet("1", "2"));
+		controller.addClient(form );
+		
+	}
+	
+	@Test(expected = InvalidClientException.class)
+	public final void testAddClientError() {
 		
 		ClientModel form = new ClientModel();
 		form.setClientId("abc");
 		form.setClientSec("12345");
-		form.setReClientSec("12345");
 		form.setValidity("3600");
 		form.setDirUrl("http://localhost:8080");
 		form.setResourceId("abc");
